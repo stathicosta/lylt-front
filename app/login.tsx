@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const logInUser = useUserStore((state) => state.toggleHadOnLogin);
+  const logInUser = useUserStore((state) => state.logInUser);
   const handlePress = () => {
     logInUser();
     router.replace("/");

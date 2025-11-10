@@ -6,7 +6,8 @@ type UserStore = {
   isLoggedIn: boolean;
   username: string;
   email: string;
-  toggleHadOnLogin: () => void;
+  logInUser: () => void;
+  logOutUser: () => void;
 };
 
 export const useUserStore = create<UserStore>()(
@@ -15,8 +16,14 @@ export const useUserStore = create<UserStore>()(
       isLoggedIn: false,
       username: "",
       email: "",
-      toggleHadOnLogin: () =>
-        set((state) => ({ ...state, isLoggedIn: !state.isLoggedIn })),
+      logInUser: () =>
+        set((state) => ({
+          ...state,
+          isLoggedIn: !state.isLoggedIn,
+          username: "JohnDoe",
+          email: "johndoe@example.com",
+        })),
+      logOutUser: () => set({ isLoggedIn: false, username: "", email: "" }),
     }),
     {
       name: "lylt-user-storage",
