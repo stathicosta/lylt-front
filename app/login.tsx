@@ -1,8 +1,9 @@
 import { useUserStore } from "@/store/userStore";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, TextInputChangeEvent } from "react-native";
+import { StyleSheet, TextInputChangeEvent } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { theme } from "@/theme";
 
@@ -95,14 +96,13 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       keyboardShouldPersistTaps="handled"
     >
       <VStack space="md">
-        <Box className="mb-6 h-10" />
-        <Box className="gap-6 w-full lg:w-1/3">
+        <Box className="gap-6 mt-24 w-full lg:w-1/3">
           <VStack
             className={`${getBorderStyle(
               "Subtle",
@@ -117,7 +117,6 @@ export default function LoginScreen() {
                 <Text className="font-normal text-lg text-typography-700">
                   Don&apos;t have an account?
                 </Text>
-
                 <Text className="font-medium text-lg text-typography-700">
                   Sign up
                 </Text>
@@ -136,6 +135,7 @@ export default function LoginScreen() {
                     aria-label="abc@gmail.com"
                     placeholder="abc@gmail.com"
                     className="text-m font-normal leading-[21px] text-typography-600 h-full"
+                    type="text"
                   />
                 </Input>
                 <FormControlError>
@@ -251,7 +251,7 @@ export default function LoginScreen() {
           </VStack>
         </Box>
       </VStack>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
