@@ -21,26 +21,17 @@ import { HStack } from "@/components/ui/hstack";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
-import {
-  EyeIcon,
-  EyeOffIcon,
-  CheckIcon,
-  AlertCircleIcon,
-} from "@/components/ui/icon";
+import { EyeIcon, EyeOffIcon, AlertCircleIcon } from "@/components/ui/icon";
 import { Box } from "@/components/ui/box";
-import { Link, LinkText } from "@/components/ui/link";
 import { Divider } from "@/components/ui/divider";
-
-import {
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckboxLabel,
-} from "@/components/ui/checkbox";
 
 export default function LoginScreen() {
   const router = useRouter();
   const logInUser = useUserStore((state) => state.logInUser);
+
+  const [username, setUsername] = useState("");
+  const [usernameFormIsInvalid, setUsernameFormIsInvalid] = useState(false);
+  const [usernameErrorText, setUsernameErrorText] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,6 +48,9 @@ export default function LoginScreen() {
     setEmail(e.nativeEvent.text);
   };
 
+  const handleUsernameInputChange = (e: TextInputChangeEvent) => {
+    setUsername(e.nativeEvent.text);
+  };
   const handlePasswordInputChange = (e: TextInputChangeEvent) => {
     setPassword(e.nativeEvent.text);
   };
@@ -64,7 +58,15 @@ export default function LoginScreen() {
   // const { colorMode } = useContext(ThemeContext);
   const colorMode = "light"; // hardcoded for now
 
-  const handleLogin = () => {
+  const handleRegister = () => {
+    if (username === "") {
+      setUsernameErrorText("Username is required");
+      setUsernameFormIsInvalid(true);
+    } else {
+      setUsernameErrorText("");
+      setUsernameFormIsInvalid(false);
+    }
+
     if (email === "") {
       setEmailErrorText("Email is required");
       setEmailFormIsInvalid(true);
@@ -81,7 +83,13 @@ export default function LoginScreen() {
       setPasswordFormIsInvalid(false);
     }
 
-    if (email === "" || password === "") {
+    if (email === "" || password === "" || username === "") {
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setEmailErrorText("Please enter a valid email address");
+      setEmailFormIsInvalid(true);
       return;
     }
 
@@ -89,8 +97,8 @@ export default function LoginScreen() {
     router.replace("/");
   };
 
-  const handleRegisterRedirect = () => {
-    router.push("/register");
+  const handleLoginRedirect = () => {
+    router.replace("/login");
   };
 
   const handleShowPassword = () => {
@@ -115,21 +123,46 @@ export default function LoginScreen() {
           >
             <VStack className="gap-1">
               <Heading size="2xl" className="text-typography-900">
-                Login to your account
+                Register
               </Heading>
               <HStack className="gap-1.5">
                 <Text className="font-normal text-lg text-typography-700">
-                  Don&apos;t have an account?
+                  Already have an account?
                 </Text>
                 <Text
-                  onPress={handleRegisterRedirect}
+                  onPress={handleLoginRedirect}
                   className="font-medium text-lg text-typography-700"
                 >
-                  Sign up
+                  Log In
                 </Text>
               </HStack>
             </VStack>
             <VStack className="gap-5">
+              <FormControl
+                className="gap-1.5"
+                isInvalid={usernameFormIsInvalid}
+              >
+                <FormControlLabel>
+                  <FormControlLabelText className="text-m font-medium leading-normal text-typography-900">
+                    Username
+                  </FormControlLabelText>
+                </FormControlLabel>
+                <Input className={`py-0 ${getBorderStyle("Subtle", "input")}`}>
+                  <InputField
+                    onChange={handleUsernameInputChange}
+                    aria-label="Username"
+                    placeholder="Username"
+                    className="text-m font-normal leading-[21px] text-typography-600 h-full"
+                    type="text"
+                  />
+                </Input>
+                <FormControlError>
+                  <FormControlErrorIcon as={AlertCircleIcon} />
+                  <FormControlErrorText>
+                    {usernameErrorText}
+                  </FormControlErrorText>
+                </FormControlError>
+              </FormControl>
               <FormControl className="gap-1.5" isInvalid={emailFormIsInvalid}>
                 <FormControlLabel>
                   <FormControlLabelText className="text-m font-medium leading-normal text-typography-900">
@@ -182,30 +215,15 @@ export default function LoginScreen() {
                   </FormControlErrorText>
                 </FormControlError>
               </FormControl>
-              <HStack className="justify-between">
-                <Checkbox size="sm" value="Remember me">
-                  <CheckboxIndicator>
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel className="text-m font-normal leading-[21px] text-typography-900">
-                    Remember me
-                  </CheckboxLabel>
-                </Checkbox>
-                <Link>
-                  <LinkText className="self-end text-xs font-normal leading-[21px] text-primary-700 no-underline">
-                    Forgot Password?
-                  </LinkText>
-                </Link>
-              </HStack>
             </VStack>
             <Button
-              onPress={handleLogin}
+              onPress={handleRegister}
               className={`${getBorderStyle("Subtle", "button")} w-full`}
               size="sm"
               action="primary"
             >
               <ButtonText className="text-sm font-semibold leading-normal text-typography-0">
-                Login
+                Register
               </ButtonText>
             </Button>
             <HStack className="justify-center flex-1 items-center">
@@ -288,3 +306,8 @@ const getBorderStyle = (activeButton: string, elementType: string) => {
       return ""; // Default to subtle if no match
   }
 };
+
+function isValidEmail(email: string) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(String(email).toLowerCase());
+}
