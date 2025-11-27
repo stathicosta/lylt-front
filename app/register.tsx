@@ -25,7 +25,7 @@ import { EyeIcon, EyeOffIcon, AlertCircleIcon } from "@/components/ui/icon";
 import { Box } from "@/components/ui/box";
 import { Divider } from "@/components/ui/divider";
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
   const logInUser = useUserStore((state) => state.logInUser);
 
@@ -114,7 +114,7 @@ export default function LoginScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <VStack space="md">
-        <Box className="gap-6 mt-24 w-full lg:w-1/3">
+        <Box className="gap-6 mt-24 w-full">
           <VStack
             className={`${getBorderStyle(
               "Subtle",
