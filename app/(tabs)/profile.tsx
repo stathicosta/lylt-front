@@ -1,7 +1,5 @@
 import { useRouter } from "expo-router";
 import { useUserStore } from "@/store/userStore";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { ScrollView, StyleSheet } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
@@ -10,6 +8,7 @@ import { theme } from "@/theme";
 import { Divider } from "@/components/ui/divider";
 import { Icon, EditIcon, MailIcon, PhoneIcon } from "@/components/ui/icon";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { supabase } from "@/helpers/supabaseSecureStore";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -20,7 +19,12 @@ export default function ProfileScreen() {
   const userProfileEmail = "john.doe@example.com";
   const userProfilePhoneNumber = "+1234567890";
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+    }
+
     logoutUser();
     router.replace("/login");
   };
