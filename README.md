@@ -26,8 +26,8 @@ npx expo prebuild --platform android
 or
 
 ```
-npx expo prebuild --platform android --clean
 npx expo prebuild --platform ios --clean
+npx expo prebuild --platform android --clean
 ```
 
 Run the native builds for each platform accordingly
