@@ -10,7 +10,7 @@ import "@/global.css";
 import { supabase, getUserQrCode } from "@/helpers/supabaseSecureStore";
 import { useEffect, useState } from "react";
 
-//CWIP TODO: validate the splash screen works
+// TODO: the app does not run in airplane mode. Needs a fix
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,13 +27,11 @@ export default function Layout() {
       });
 
       try {
-        // const networkState = await Network.getNetworkStateAsync();
-        // const hasInternetAccess = networkState.isInternetReachable ?? false;
-
         const { data, error } = await supabase.auth.getSession();
         console.debug("---session data---", data, "----");
         console.debug("---session error---", error, "----");
 
+        //TODO Discuss We can still show the QR cdode from the storage despite there is an error
         if (error) {
           throw error;
         }
@@ -41,7 +39,12 @@ export default function Layout() {
         const isUserLoggedIn = data.session !== null;
 
         if (isUserLoggedIn) {
+          try {
+            const getQrCode = await getUserQrCode(data.session!.user.id);
+            useUserStore.getState().setQrCode(getQrCode);
+          } catch {}
           setIsLoading(false);
+          SplashScreen.hideAsync();
           return;
         }
 
@@ -55,15 +58,22 @@ export default function Layout() {
           console.debug("---user details---", user, "---");
           console.debug("---session data---", session, "---");
 
-          // in case there is an error or there is no session
-          // probably means we are offline and we cant do something more
-          if (error || !user || !session) {
+          // In case of an error, means we are offline or something bad
+          // has happened with the server.
+          if (error) {
             throw error;
+          }
+
+          if (!user || !session) {
+            return router.replace({
+              pathname: "/login",
+            });
           }
 
           const qrCode = await getUserQrCode(session.user.id);
           useUserStore.getState().setQrCode(qrCode);
           setIsLoading(false);
+          SplashScreen.hideAsync();
         }
       } catch (error) {
         console.error("While fetching user session:", error);
@@ -74,12 +84,6 @@ export default function Layout() {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (isLoading === false) {
-      SplashScreen.hide();
-    }
-  }, [isLoading]);
 
   // We set this to avoid rendering tabs before app is ready
   if (isLoading) {
